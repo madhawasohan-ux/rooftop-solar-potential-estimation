@@ -1,0 +1,62 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environments
+venv/
+.venv/
+
+# Large datasets / images
+kaggle dataset/
+Datasets/
+images/
+
+# Research papers
+research papers/
+
+# QGIS temporary/project files
+*.qmd
+*.qgz~
+*.aux.xml
+
+# Temporary / generated files
+outputs/
+*.log
+
+# Backup files
+~$*
+*.tmp
+
+# Documents / presentations
+*.docx
+*.pdf
+*.pptx
+*.xlsx
+# Project datasets
+kaglle dataset/
+data/
+Datasets/
+images/
+
+# Research papers
+research papers/
+
+# Old / temporary project folders
+building rooftop area srilanka/
+rootop area calculation for validation/
+rootop area project malabe qgis/
+solar irradiance 10 yrs/
+
+# Old Python versions
+app - v1.py
+app - v2.py
+app_v3_monthly_table_working.py
+
+# QGIS temporary files
+*.qmd
+# Large model and dataset files
+model 1/rooftop_best_model.pt
+malabe boundary (srilanka booundaries of towns)/*.zipmalabe boundary (srilanka booundaries of towns)/
+malabe boundary (srilanka booundaries of towns)/
