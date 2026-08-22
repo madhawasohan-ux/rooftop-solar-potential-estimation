@@ -9,3 +9,4 @@ numpy
 openpyxl
 matplotlib
 reportlab
+kaleido
