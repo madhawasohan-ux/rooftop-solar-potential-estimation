@@ -1675,83 +1675,70 @@ if (
     )
 
 
-       # ========================================================
+    # ========================================================
     # MONTHLY GRAPH
     # ========================================================
 
     fig = px.line(
+
         monthly_df,
+
         x="Month",
+
         y="Estimated Energy (kWh)",
+
         markers=True,
+
         title="Monthly Solar Energy Generation"
+
     )
+
 
     fig.update_layout(
+
         xaxis_title="Month",
+
         yaxis_title="Energy (kWh)",
+
         template="plotly_white"
+
     )
 
-    # Show graph on Streamlit
-    st.plotly_chart(
-        fig,
-        use_container_width=True
-    )
 
     # ========================================================
-    # SAVE MONTHLY ENERGY GRAPH FOR PDF
-    # Using Matplotlib instead of Kaleido
+    # SAVE GRAPH
     # ========================================================
 
     with tempfile.NamedTemporaryFile(
+
         delete=False,
+
         suffix=".png"
+
     ) as tmp:
 
         graph_path = tmp.name
 
-    plt.figure(figsize=(12, 7))
 
+    # Export graph for PDF using Matplotlib.
+    # This avoids the Kaleido/Chrome dependency on Streamlit Cloud.
+    plt.figure(figsize=(12, 7))
     plt.plot(
         monthly_df["Month"],
         monthly_df["Estimated Energy (kWh)"],
         marker="o"
     )
-
-    plt.title(
-        "Monthly Solar Energy Generation",
-        fontsize=18,
-        fontweight="bold"
-    )
-
-    plt.xlabel(
-        "Month",
-        fontsize=13
-    )
-
-    plt.ylabel(
-        "Energy (kWh)",
-        fontsize=13
-    )
-
-    plt.xticks(
-        rotation=45
-    )
-
-    plt.grid(
-        True,
-        alpha=0.3
-    )
-
+    plt.title("Monthly Solar Energy Generation")
+    plt.xlabel("Month")
+    plt.ylabel("Energy (kWh)")
+    plt.xticks(rotation=45)
+    plt.grid(True, alpha=0.25)
     plt.tight_layout()
-
     plt.savefig(
         graph_path,
         dpi=200,
         bbox_inches="tight"
     )
-
     plt.close()
 
 
@@ -1768,27 +1755,23 @@ if (
     )
 
     irradiance_fig.update_traces(
+        marker_color="#2E75B6",
         texttemplate="%{text:.2f}",
         textposition="outside"
     )
 
     irradiance_fig.update_layout(
         template="plotly_white",
-        xaxis_title="Month",
-        yaxis_title="Solar Irradiance (kWh/m²/day)"
+        xaxis=dict(
+            tickfont=dict(color="black", size=12),
+            title_font=dict(color="black", size=14)
+        ),
+        yaxis=dict(
+            tickfont=dict(color="black", size=12),
+            title_font=dict(color="black", size=14)
+        ),
+        title_font=dict(color="black", size=18)
     )
-
-    # Show irradiance graph on Streamlit
-    st.plotly_chart(
-        irradiance_fig,
-        use_container_width=True
-    )
-
-
-    # ========================================================
-    # SAVE IRRADIANCE GRAPH FOR PDF
-    # Using Matplotlib instead of Kaleido
-    # ========================================================
 
     with tempfile.NamedTemporaryFile(
         delete=False,
@@ -1797,60 +1780,24 @@ if (
 
         irradiance_graph_path = irradiance_tmp.name
 
+    # Export irradiance graph for PDF using Matplotlib.
+    # This avoids the Kaleido/Chrome dependency on Streamlit Cloud.
     plt.figure(figsize=(12, 7))
-
-    bars = plt.bar(
+    plt.bar(
         monthly_df["Month"],
         monthly_df["Solar Irradiance (kWh/m²/day)"]
     )
-
-    plt.title(
-        "Monthly Solar Irradiance",
-        fontsize=18,
-        fontweight="bold"
-    )
-
-    plt.xlabel(
-        "Month",
-        fontsize=13
-    )
-
-    plt.ylabel(
-        "Solar Irradiance (kWh/m²/day)",
-        fontsize=13
-    )
-
-    plt.xticks(
-        rotation=45
-    )
-
-    plt.grid(
-        axis="y",
-        alpha=0.3
-    )
-
-    # Add irradiance values above bars
-    for bar in bars:
-
-        height = bar.get_height()
-
-        plt.text(
-            bar.get_x() + bar.get_width() / 2,
-            height,
-            f"{height:.2f}",
-            ha="center",
-            va="bottom",
-            fontsize=9
-        )
-
+    plt.title("Monthly Solar Irradiance")
+    plt.xlabel("Month")
+    plt.ylabel("Solar Irradiance (kWh/m²/day)")
+    plt.xticks(rotation=45)
+    plt.grid(True, axis="y", alpha=0.25)
     plt.tight_layout()
-
     plt.savefig(
         irradiance_graph_path,
         dpi=200,
         bbox_inches="tight"
     )
-
     plt.close()
 
 
@@ -1905,61 +1852,9 @@ if (
 
         file_name="Solar_Potential_Report.pdf",
 
-        mime="application/pdf"
+        mime="application/pdf",
 
-    )
-    # ========================================================
-    # PDF REPORT
-    # ========================================================
-
-    pdf_file = create_pdf_report(
-
-        buildings_found=len(
-            selected_buildings
-        ),
-
-        roof_area=roof_area,
-
-        usable_roof_area=usable_roof_area,
-
-        panel_name=panel_type,
-
-        panel_power=panel_power,
-
-        panel_area=panel_area,
-
-        panel_efficiency=panel_efficiency,
-
-        num_panels=number_of_panels,
-
-        installed_capacity=installed_capacity,
-
-        annual_energy=annual_energy,
-
-        monthly_df=monthly_df,
-
-        graph_image=graph_path,
-
-        selected_area_image=selected_area_image_path,
-
-        actual_usage_kwh=actual_usage_kwh
-
-    )
-
-
-    # ========================================================
-    # DOWNLOAD PDF
-    # ========================================================
-
-    st.download_button(
-
-        label="📄 Download PDF Report",
-
-        data=pdf_file,
-
-        file_name="Solar_Potential_Report.pdf",
-
-        mime="application/pdf"
+        key="download_pdf_report"
 
     )
 
@@ -1972,6 +1867,23 @@ if (
 
         fig,
 
-        use_container_width=True
+        use_container_width=True,
+
+        key="monthly_energy_graph"
+
+    )
+
+
+    # ========================================================
+    # SHOW SOLAR IRRADIANCE GRAPH
+    # ========================================================
+
+    st.plotly_chart(
+
+        irradiance_fig,
+
+        use_container_width=True,
+
+        key="monthly_irradiance_graph"
 
     )
