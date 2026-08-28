@@ -8,6 +8,7 @@ import geopandas as gpd
 import pandas as pd
 import plotly.express as px
 import matplotlib.pyplot as plt
+import qrcode
 
 from reportlab.lib.pagesizes import A4
 from reportlab.platypus import (
@@ -42,6 +43,19 @@ IRRADIANCE_PATH = os.path.join(
     "data",
     "monthly_irradiance.csv"
 )
+
+APP_URL = "https://rooftop-solar-potential.streamlit.app"
+
+def create_qr_code():
+    qr = qrcode.QRCode(version=4, error_correction=qrcode.constants.ERROR_CORRECT_H, box_size=10, border=4)
+    qr.add_data(APP_URL)
+    qr.make(fit=True)
+    qr_image = qr.make_image()
+    temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".png")
+    qr_path = temp_file.name
+    temp_file.close()
+    qr_image.save(qr_path)
+    return qr_path
 
 
 # ============================================================
@@ -502,6 +516,7 @@ def create_pdf_report(
     monthly_df,
     graph_image,
     selected_area_image,
+    qr_image,
     actual_usage_kwh=None
 ):
 
@@ -1128,6 +1143,22 @@ def create_pdf_report(
 
 
     # ========================================================
+    # QR CODE - WEB APP
+    # ========================================================
+
+    content.append(Paragraph("Access the Web Application", center_title))
+    content.append(Spacer(1, 15))
+    content.append(Paragraph(
+        "Scan the QR code below to open the deployed rooftop solar potential estimation web application.",
+        normal
+    ))
+    content.append(Spacer(1, 15))
+    content.append(Image(qr_image, width=200, height=200))
+    content.append(Spacer(1, 10))
+    content.append(Paragraph(APP_URL, normal))
+
+
+    # ========================================================
     # BUILD PDF
     # ========================================================
 
@@ -1151,9 +1182,16 @@ st.set_page_config(
     layout="wide"
 )
 
-st.title(
-    "🏠 Rooftop Solar Potential Estimation"
-)
+header_col1, header_col2 = st.columns([8, 1])
+
+with header_col1:
+    st.title(
+        "🏠 Rooftop Solar Potential Estimation"
+    )
+
+with header_col2:
+    header_qr_path = create_qr_code()
+    st.image(header_qr_path, width=120)
 
 
 # ============================================================
@@ -1720,26 +1758,15 @@ if (
         graph_path = tmp.name
 
 
-    # Export graph for PDF using Matplotlib.
-    # This avoids the Kaleido/Chrome dependency on Streamlit Cloud.
-    plt.figure(figsize=(12, 7))
-    plt.plot(
-        monthly_df["Month"],
-        monthly_df["Estimated Energy (kWh)"],
-        marker="o"
-    )
-    plt.title("Monthly Solar Energy Generation")
-    plt.xlabel("Month")
-    plt.ylabel("Energy (kWh)")
-    plt.xticks(rotation=45)
-    plt.grid(True, alpha=0.25)
-    plt.tight_layout()
-    plt.savefig(
+    fig.write_image(
+
         graph_path,
-        dpi=200,
-        bbox_inches="tight"
+
+        width=1200,
+
+        height=700
+
     )
-    plt.close()
 
 
     # ========================================================
@@ -1780,25 +1807,18 @@ if (
 
         irradiance_graph_path = irradiance_tmp.name
 
-    # Export irradiance graph for PDF using Matplotlib.
-    # This avoids the Kaleido/Chrome dependency on Streamlit Cloud.
-    plt.figure(figsize=(12, 7))
-    plt.bar(
-        monthly_df["Month"],
-        monthly_df["Solar Irradiance (kWh/m²/day)"]
-    )
-    plt.title("Monthly Solar Irradiance")
-    plt.xlabel("Month")
-    plt.ylabel("Solar Irradiance (kWh/m²/day)")
-    plt.xticks(rotation=45)
-    plt.grid(True, axis="y", alpha=0.25)
-    plt.tight_layout()
-    plt.savefig(
+    irradiance_fig.write_image(
         irradiance_graph_path,
-        dpi=200,
-        bbox_inches="tight"
+        width=1200,
+        height=700
     )
-    plt.close()
+
+
+    # ========================================================
+    # QR CODE
+    # ========================================================
+
+    qr_path = create_qr_code()
 
 
     # ========================================================
@@ -1835,6 +1855,8 @@ if (
 
         selected_area_image=selected_area_image_path,
 
+        qr_image=qr_path,
+
         actual_usage_kwh=actual_usage_kwh
 
     )
@@ -1852,9 +1874,7 @@ if (
 
         file_name="Solar_Potential_Report.pdf",
 
-        mime="application/pdf",
-
-        key="download_pdf_report"
+        mime="application/pdf"
 
     )
 
@@ -1867,23 +1887,6 @@ if (
 
         fig,
 
-        use_container_width=True,
-
-        key="monthly_energy_graph"
-
-    )
-
-
-    # ========================================================
-    # SHOW SOLAR IRRADIANCE GRAPH
-    # ========================================================
-
-    st.plotly_chart(
-
-        irradiance_fig,
-
-        use_container_width=True,
-
-        key="monthly_irradiance_graph"
+        use_container_width=True
 
     )
