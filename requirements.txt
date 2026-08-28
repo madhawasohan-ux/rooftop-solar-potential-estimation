@@ -10,3 +10,4 @@ openpyxl
 matplotlib
 reportlab
 kaleido
+qrcode[pil]
