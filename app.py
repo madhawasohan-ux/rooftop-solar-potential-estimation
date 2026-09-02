@@ -423,7 +423,7 @@ def create_pdf_report(buildings_found, roof_area, usable_roof_area,
     content.append(Spacer(1,12))
     content.append(Paragraph("Potential Surplus-Energy Utilisation Options", title))
     options_data = [
-        [Paragraph('<font color="white"><b>Option</b></font>', normal),
+        [Paragraph('<font color="white"><b>Option</b></font>', normal)],
         [Paragraph('<font color="white"><b>Potential Application</b></font>', normal)],
         [Paragraph("Battery Energy Storage (BESS)", normal), Paragraph("Store excess daytime PV generation for later use.", normal)],
         [Paragraph("EV Charging", normal), Paragraph("Use surplus generation to support electric-vehicle charging.", normal)],
