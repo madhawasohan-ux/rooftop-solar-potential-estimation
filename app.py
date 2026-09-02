@@ -240,8 +240,7 @@ def add_client_report_sections(content, annual_energy, installed_capacity,
         ))
     else:
         content.append(Paragraph(
-            "No actual electricity consumption data was provided. "
-            "Therefore, 60%, 70% and 80% planning scenarios are presented.",
+            "No actual electricity consumption data was provided. ",
             normal
         ))
 
@@ -424,7 +423,8 @@ def create_pdf_report(buildings_found, roof_area, usable_roof_area,
     content.append(Spacer(1,12))
     content.append(Paragraph("Potential Surplus-Energy Utilisation Options", title))
     options_data = [
-        [Paragraph("<b>Option</b>", normal), Paragraph("<b>Potential Application</b>", normal)],
+        [Paragraph('<font color="white"><b>Option</b></font>', normal),
+        [Paragraph('<font color="white"><b>Potential Application</b></font>', normal)],
         [Paragraph("Battery Energy Storage (BESS)", normal), Paragraph("Store excess daytime PV generation for later use.", normal)],
         [Paragraph("EV Charging", normal), Paragraph("Use surplus generation to support electric-vehicle charging.", normal)],
         [Paragraph("Water Pumping", normal), Paragraph("Shift pumping loads toward periods of high solar generation.", normal)],
